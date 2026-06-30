@@ -56,15 +56,57 @@ const clients = [
   },
 ];
 
+const products = [
+  {
+    id: "finance",
+    label: "Finance",
+    title: "Tax client portal",
+    audience: "For tax practitioners, bookkeepers, and small finance offices",
+    description: "Collect documents, track missing files, and show clients their filing progress in one branded workspace.",
+    status: "Ready to demo",
+    cta: "Open finance demo",
+  },
+  {
+    id: "education",
+    label: "Education",
+    title: "Study tracker",
+    audience: "For learners, tutors, schools, and support programs",
+    description: "Track study sessions, subject progress, applications, and learner accountability from one login.",
+    status: "Returning soon",
+    cta: "Education login",
+  },
+  {
+    id: "applications",
+    label: "Applications",
+    title: "Bursary and university tracker",
+    audience: "For students, parents, and advisors",
+    description: "Manage deadlines, required documents, application status, and follow-ups without losing the thread.",
+    status: "Planned",
+    cta: "Preview login",
+  },
+  {
+    id: "clientops",
+    label: "Business",
+    title: "Client workflow portal",
+    audience: "For service businesses that need intake, documents, and status updates",
+    description: "A reusable portal pattern for any business that spends too much time chasing clients for information.",
+    status: "Planned",
+    cta: "Explore use case",
+  },
+];
+
 const app = document.querySelector("#app");
-const config = window.LOGTRAQ_CONFIG || {};
+const config = {
+  salesWhatsApp: "27793257256",
+  ...(window.LOGTRAQ_CONFIG || {}),
+};
 let selectedClientIndex = 0;
 let clientMode = false;
 let supabaseClientPromise;
 
-function salesHref() {
+function salesHref(topic = "LogTraq") {
   if (!config.salesWhatsApp) return "#pricing";
-  const message = encodeURIComponent("Hi LogTraq, I want the R800 tax portal launch setup");
+  const message = encodeURIComponent(`Hi LogTraq, I'm interested in ${topic}`);
   return `https://wa.me/${config.salesWhatsApp.replace(/[^0-9]/g, "")}?text=${message}`;
 }
 
@@ -144,46 +186,73 @@ function renderLanding() {
       <span>LogTraq</span>
     </a>
     <div class="nav-actions">
-      <button class="ghost-button" id="viewDemo">View portal</button>
-      <a class="primary-button" href="${salesHref()}" target="_blank" rel="noreferrer">Book R800 setup</a>
+      <a class="ghost-button" href="#products">Products</a>
+      <button class="ghost-button" id="viewDemo">Finance demo</button>
+      <a class="primary-button" href="${salesHref("a LogTraq portal")}" target="_blank" rel="noreferrer">WhatsApp LogTraq</a>
     </div>
   `;
 
   const hero = el("section", "hero");
   hero.innerHTML = `
     <div class="hero-copy">
-      <p class="eyebrow">Tax season client admin</p>
-      <h1>Give every tax client a clean upload portal and progress tracker.</h1>
-      <p class="hero-text">LogTraq helps small tax practices collect documents, see who is ready, and reduce repeated WhatsApp follow-ups during filing season.</p>
+      <p class="eyebrow">One domain. Multiple portals.</p>
+      <h1>LogTraq turns messy admin into tracked client journeys.</h1>
+      <p class="hero-text">Choose the workspace you need: finance, education, applications, or client operations. Each product uses the same idea: collect information, track progress, and keep people moving.</p>
       <div class="hero-actions">
-        <button class="primary-button" id="openPortal">Open demo portal</button>
-        <a class="secondary-link" href="#pricing">See launch offer</a>
+        <button class="primary-button" id="openPortal">Open finance demo</button>
+        <a class="secondary-link" href="#products">Choose a product</a>
       </div>
     </div>
     <div class="hero-media">
       <img src="./assets/portal-workspace.webp" alt="Laptop showing a professional dashboard" />
       <div class="floating-stat">
-        <span>Ready to file</span>
-        <strong>18 clients</strong>
+        <span>First product live</span>
+        <strong>Finance</strong>
       </div>
     </div>
   `;
 
+  const productSection = el("section", "section-block product-section");
+  productSection.id = "products";
+  productSection.innerHTML = `
+    <div class="section-heading">
+      <p class="eyebrow">Product lineup</p>
+      <h2>One LogTraq brand, different login paths.</h2>
+      <p>Visitors do not need a different domain for every offer. They land on LogTraq, choose the workspace that fits them, and enter the right portal.</p>
+    </div>
+  `;
+  const productGrid = el("div", "product-grid");
+  products.forEach((product) => {
+    const card = el("article", `product-card ${product.id}`);
+    card.innerHTML = `
+      <div class="product-meta">
+        <span>${product.label}</span>
+        <em>${product.status}</em>
+      </div>
+      <h3>${product.title}</h3>
+      <p class="audience">${product.audience}</p>
+      <p>${product.description}</p>
+      <button class="${product.id === "finance" ? "primary-button" : "secondary-button"}" data-product="${product.id}">${product.cta}</button>
+    `;
+    productGrid.appendChild(card);
+  });
+  productSection.appendChild(productGrid);
+
   const journey = el("section", "section-block tracker-preview");
   journey.innerHTML = `
     <div>
-      <p class="eyebrow">Visual client journey</p>
-      <h2>Clients see exactly where they are.</h2>
-      <p>Practitioners see the same journey as a pipeline: what is missing, what is ready, and what needs attention today.</p>
+      <p class="eyebrow">Reusable portal engine</p>
+      <h2>Every product can use a progress map.</h2>
+      <p>Finance clients can track tax filing. Students can track study and applications. Service clients can track intake, documents, review, and completion.</p>
     </div>
   `;
   journey.appendChild(renderJourney(3));
 
   const grid = el("section", "value-grid");
   [
-    ["Client intake", "Collect contact details, tax year context, and consent before documents arrive."],
-    ["Document tracker", "Show each client what is uploaded, what is missing, and what the practice still needs."],
-    ["Practice dashboard", "Keep all clients in one queue instead of searching through WhatsApp threads."],
+    ["One brand", "LogTraq stays the umbrella, so the domain can support more than one market without looking scattered."],
+    ["Separate workspaces", "Finance, education, applications, and business portals can each have their own login and dashboard."],
+    ["Same engine", "Intake, uploads, progress tracking, statuses, and admin dashboards can be reused across products."],
   ].forEach(([title, body]) => {
     const card = el("article", "value-card");
     card.innerHTML = `<h3>${title}</h3><p>${body}</p>`;
@@ -194,18 +263,56 @@ function renderLanding() {
   pricing.id = "pricing";
   pricing.innerHTML = `
     <div>
-      <p class="eyebrow">Launch offer</p>
-      <h2>R800 setup for the first tax practices.</h2>
-      <p>Includes a branded portal, intake flow, client progress tracker, and document upload-ready interface.</p>
+      <p class="eyebrow">First sellable offer</p>
+      <h2>Finance portal launch setup: R800.</h2>
+      <p>The first product to sell is the tax client portal because filing season creates urgent demand. The domain still remains a multi-product LogTraq hub.</p>
     </div>
-    <a class="primary-button" href="${salesHref()}" target="_blank" rel="noreferrer">Claim launch setup</a>
+    <a class="primary-button" href="${salesHref("the R800 finance portal setup")}" target="_blank" rel="noreferrer">Claim launch setup</a>
   `;
 
-  shell.append(nav, hero, journey, grid, pricing);
+  shell.append(nav, hero, productSection, journey, grid, pricing);
   app.replaceChildren(shell);
 
   document.querySelector("#openPortal").addEventListener("click", () => renderPortal());
   document.querySelector("#viewDemo").addEventListener("click", () => renderPortal());
+  document.querySelectorAll("[data-product]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const product = products.find((item) => item.id === button.dataset.product);
+      if (product?.id === "finance") renderPortal();
+      else renderProductLogin(product);
+    });
+  });
+}
+
+function renderProductLogin(product) {
+  const shell = el("main", "login-shell");
+  shell.innerHTML = `
+    <section class="login-preview">
+      <a class="brand" href="#" id="loginHome">
+        <span class="brand-mark">LQ</span>
+        <span>LogTraq</span>
+      </a>
+      <div class="login-card">
+        <p class="eyebrow">${product.label} workspace</p>
+        <h1>${product.title}</h1>
+        <p>${product.description}</p>
+        <label>
+          Email
+          <input type="email" placeholder="you@example.com" />
+        </label>
+        <label>
+          Password
+          <input type="password" placeholder="Password" />
+        </label>
+        <button class="primary-button">Login preview</button>
+        <a class="secondary-link" href="${salesHref(product.title)}" target="_blank" rel="noreferrer">Ask about this product</a>
+      </div>
+      <button class="ghost-button" id="backToHub">Back to product hub</button>
+    </section>
+  `;
+  app.replaceChildren(shell);
+  document.querySelector("#loginHome").addEventListener("click", renderLanding);
+  document.querySelector("#backToHub").addEventListener("click", renderLanding);
 }
 
 function metric(label, value, detail) {
