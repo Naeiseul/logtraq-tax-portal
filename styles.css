@@ -38,6 +38,9 @@ button {
 .site-shell {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
 .topbar,
@@ -226,8 +229,21 @@ h3 {
 }
 
 .section-heading {
-  max-width: 760px;
+  max-width: 680px;
   margin-bottom: 22px;
+}
+
+.product-hub {
+  display: grid;
+  align-content: center;
+  padding: 36px 0 48px;
+}
+
+.product-hub .section-heading p:last-child {
+  max-width: 520px;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.55;
 }
 
 .product-grid {
@@ -240,7 +256,7 @@ h3 {
   display: grid;
   align-content: start;
   gap: 12px;
-  min-height: 330px;
+  min-height: 270px;
   padding: 22px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -257,6 +273,10 @@ h3 {
   background: linear-gradient(135deg, #ffffff, #eef7ff);
 }
 
+.product-card.health {
+  background: linear-gradient(135deg, #ffffff, #effcf6);
+}
+
 .product-card.applications {
   background: linear-gradient(135deg, #ffffff, #fff7e6);
 }
@@ -266,7 +286,8 @@ h3 {
 }
 
 .product-card h3 {
-  font-size: 1.4rem;
+  margin-bottom: 0;
+  font-size: 1.35rem;
 }
 
 .product-card p {
@@ -275,8 +296,15 @@ h3 {
 }
 
 .product-card .audience {
+  margin-bottom: 0;
   color: var(--ink);
   font-weight: 750;
+}
+
+.product-card .primary-button,
+.product-card .secondary-button {
+  width: 100%;
+  margin-top: auto;
 }
 
 .product-meta {
@@ -306,6 +334,23 @@ h3 {
 .product-meta em {
   background: var(--aqua);
   color: var(--green-dark);
+}
+
+.hub-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.hub-footer a {
+  color: var(--green-dark);
+  font-weight: 900;
+  text-decoration: none;
 }
 
 .tracker-preview {

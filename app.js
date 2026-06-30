@@ -58,40 +58,40 @@ const clients = [
 
 const products = [
   {
+    id: "education",
+    label: "Education",
+    title: "Academic LogTraq",
+    audience: "For learners, tutors, schools, and support programs",
+    description: "Study tracking, subject progress, applications, and learner accountability.",
+    status: "Existing product",
+    cta: "Open education",
+  },
+  {
     id: "finance",
     label: "Finance",
     title: "Tax client portal",
     audience: "For tax practitioners, bookkeepers, and small finance offices",
-    description: "Collect documents, track missing files, and show clients their filing progress in one branded workspace.",
+    description: "Client intake, document collection, missing-file tracking, and tax progress updates.",
     status: "Ready to demo",
-    cta: "Open finance demo",
+    cta: "Open finance",
   },
   {
-    id: "education",
-    label: "Education",
-    title: "Study tracker",
-    audience: "For learners, tutors, schools, and support programs",
-    description: "Track study sessions, subject progress, applications, and learner accountability from one login.",
-    status: "Returning soon",
-    cta: "Education login",
+    id: "health",
+    label: "Health",
+    title: "Practice admin portal",
+    audience: "For small health and wellness practices",
+    description: "Patient intake, document collection, visit prep, and admin status tracking.",
+    status: "Planned",
+    cta: "Preview health",
   },
   {
     id: "applications",
     label: "Applications",
     title: "Bursary and university tracker",
     audience: "For students, parents, and advisors",
-    description: "Manage deadlines, required documents, application status, and follow-ups without losing the thread.",
+    description: "Deadlines, required documents, application status, and follow-up tracking.",
     status: "Planned",
-    cta: "Preview login",
-  },
-  {
-    id: "clientops",
-    label: "Business",
-    title: "Client workflow portal",
-    audience: "For service businesses that need intake, documents, and status updates",
-    description: "A reusable portal pattern for any business that spends too much time chasing clients for information.",
-    status: "Planned",
-    cta: "Explore use case",
+    cta: "Preview applications",
   },
 ];
 
@@ -186,39 +186,17 @@ function renderLanding() {
       <span>LogTraq</span>
     </a>
     <div class="nav-actions">
-      <a class="ghost-button" href="#products">Products</a>
-      <button class="ghost-button" id="viewDemo">Finance demo</button>
       <a class="primary-button" href="${salesHref("a LogTraq portal")}" target="_blank" rel="noreferrer">WhatsApp LogTraq</a>
     </div>
   `;
 
-  const hero = el("section", "hero");
-  hero.innerHTML = `
-    <div class="hero-copy">
-      <p class="eyebrow">One domain. Multiple portals.</p>
-      <h1>LogTraq turns messy admin into tracked client journeys.</h1>
-      <p class="hero-text">Choose the workspace you need: finance, education, applications, or client operations. Each product uses the same idea: collect information, track progress, and keep people moving.</p>
-      <div class="hero-actions">
-        <button class="primary-button" id="openPortal">Open finance demo</button>
-        <a class="secondary-link" href="#products">Choose a product</a>
-      </div>
-    </div>
-    <div class="hero-media">
-      <img src="./assets/portal-workspace.webp" alt="Laptop showing a professional dashboard" />
-      <div class="floating-stat">
-        <span>First product live</span>
-        <strong>Finance</strong>
-      </div>
-    </div>
-  `;
-
-  const productSection = el("section", "section-block product-section");
+  const productSection = el("section", "product-hub");
   productSection.id = "products";
   productSection.innerHTML = `
     <div class="section-heading">
-      <p class="eyebrow">Product lineup</p>
-      <h2>One LogTraq brand, different login paths.</h2>
-      <p>Visitors do not need a different domain for every offer. They land on LogTraq, choose the workspace that fits them, and enter the right portal.</p>
+      <p class="eyebrow">Choose a workspace</p>
+      <h1>LogTraq</h1>
+      <p>One place for simple portals that track work, documents, and progress.</p>
     </div>
   `;
   const productGrid = el("div", "product-grid");
@@ -238,43 +216,15 @@ function renderLanding() {
   });
   productSection.appendChild(productGrid);
 
-  const journey = el("section", "section-block tracker-preview");
-  journey.innerHTML = `
-    <div>
-      <p class="eyebrow">Reusable portal engine</p>
-      <h2>Every product can use a progress map.</h2>
-      <p>Finance clients can track tax filing. Students can track study and applications. Service clients can track intake, documents, review, and completion.</p>
-    </div>
-  `;
-  journey.appendChild(renderJourney(3));
-
-  const grid = el("section", "value-grid");
-  [
-    ["One brand", "LogTraq stays the umbrella, so the domain can support more than one market without looking scattered."],
-    ["Separate workspaces", "Finance, education, applications, and business portals can each have their own login and dashboard."],
-    ["Same engine", "Intake, uploads, progress tracking, statuses, and admin dashboards can be reused across products."],
-  ].forEach(([title, body]) => {
-    const card = el("article", "value-card");
-    card.innerHTML = `<h3>${title}</h3><p>${body}</p>`;
-    grid.appendChild(card);
-  });
-
-  const pricing = el("section", "pricing-band");
-  pricing.id = "pricing";
-  pricing.innerHTML = `
-    <div>
-      <p class="eyebrow">First sellable offer</p>
-      <h2>Finance portal launch setup: R800.</h2>
-      <p>The first product to sell is the tax client portal because filing season creates urgent demand. The domain still remains a multi-product LogTraq hub.</p>
-    </div>
-    <a class="primary-button" href="${salesHref("the R800 finance portal setup")}" target="_blank" rel="noreferrer">Claim launch setup</a>
+  const footer = el("footer", "hub-footer");
+  footer.innerHTML = `
+    <span>Products stay separate. The domain stays simple.</span>
+    <a href="${salesHref("LogTraq")}" target="_blank" rel="noreferrer">Contact</a>
   `;
 
-  shell.append(nav, hero, productSection, journey, grid, pricing);
+  shell.append(nav, productSection, footer);
   app.replaceChildren(shell);
 
-  document.querySelector("#openPortal").addEventListener("click", () => renderPortal());
-  document.querySelector("#viewDemo").addEventListener("click", () => renderPortal());
   document.querySelectorAll("[data-product]").forEach((button) => {
     button.addEventListener("click", () => {
       const product = products.find((item) => item.id === button.dataset.product);
