@@ -228,6 +228,10 @@ function renderLanding() {
   document.querySelectorAll("[data-product]").forEach((button) => {
     button.addEventListener("click", () => {
       const product = products.find((item) => item.id === button.dataset.product);
+      if (product?.id === "education") {
+        window.location.href = "./education/";
+        return;
+      }
       if (product?.id === "finance") renderPortal();
       else renderProductLogin(product);
     });

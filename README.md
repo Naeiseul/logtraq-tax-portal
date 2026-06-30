@@ -10,6 +10,7 @@ This repository is intentionally separate from the previous LogTraq education/st
 - Visitors choose a workspace: Education, Finance, Health, or Applications.
 - Each workspace can have its own login and dashboard while sharing the same brand and technical foundation.
 - The homepage should stay short: product tiles first, no long landing-page sections.
+- The Education tile opens the bundled academic LogTraq app at `/education/`.
 
 ## First sellable offer
 
