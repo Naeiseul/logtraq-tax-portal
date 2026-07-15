@@ -66,11 +66,16 @@ It owns:
 
 ## 3. Product Shape
 
-This is **one finance-practice operations hub**, not separate Tax, UIF, VAT, and CIPC mini-apps.
+This is **one finance-practice operations hub** with the Tax module as the first fully live workspace.
+
+Do not build separate Tax, UIF, VAT, and CIPC mini-apps. Use one shell, one client system, one document system, one task system, and one deadline engine.
 
 One client/company can have overlapping obligations. Separate mini-portals would duplicate clients, documents, communication, permissions, and deadlines.
 
     Public marketing website
+        |
+        +-- Hub dashboard
+        |     Module tiles, alerts, recent activity, quick actions
         |
         +-- Practice workspace
         |     Staff, clients, obligations, evidence, review, deadlines
@@ -92,8 +97,9 @@ Finance areas are workflow packs on one engine:
 - Audit Evidence
 - Later FICA/FSP administration
 
-UIF belongs inside Payroll and Employer Compliance with PAYE and SDL. It is not a top-level standalone module.
+The Tax module is the only module that must be fully built immediately. Other tiles may exist as locked, inactive, or coming-soon modules, but they must never look broken.
 
+UIF belongs inside Payroll and Employer Compliance with PAYE and SDL. It is not a top-level standalone module.
 ---
 
 ## 4. Foundational Data Model
@@ -183,6 +189,13 @@ Main navigation:
 - Templates
 - Settings
 
+Hub rule:
+
+- After successful login, land the user in the hub dashboard, not directly inside a single module.
+- The hub shows module tiles.
+- The Tax tile opens the existing tax workspace.
+- If a practice is tax-only, a shortcut may deep-link back into Tax after the hub loads.
+
 Today answers:
 
 - What requires action now?
@@ -198,6 +211,7 @@ Do not make the home screen a wall of charts.
 Core capabilities:
 
 - Practice branding, branches, teams, staff, MFA, roles
+- Hub dashboard and module tiles
 - Qualifications and accountable-practitioner assignment
 - Service catalogue and engagements
 - Client CSV import and duplicate detection
@@ -217,7 +231,6 @@ Core capabilities:
 - Bulk season launch with recipient preview
 - Personal queues, deadline heatmap, new uploads, review/approval queues
 - Workload, bottlenecks, exceptions, search, saved filters
-
 ---
 
 ## 7. Client Portal
@@ -617,28 +630,35 @@ SSR auth, practices, members, roles, tenant RLS, private storage, migrations, ge
 
 Overview -> Today; Products -> Obligations; Users -> Clients; Chat -> Inbox; Workspaces -> Practices; Team -> Staff; Notifications -> Alerts; Billing -> Subscription. Use mock data first.
 
-### Phase 5: Complete one vertical journey
+### Phase 5: Add the hub shell
+
+- Login lands in the hub dashboard.
+- Module tiles appear.
+- Tax is active.
+- Other tiles can be locked or coming soon.
+- Preserve the current tax workspace route and sidebar behavior.
+
+### Phase 6: Complete one vertical journey
 
     Practice signup -> workspace -> client -> obligation -> evidence request
     -> secure client link -> upload -> accept/reject -> practitioner review
     -> client approval -> submission record -> proof -> close
 
-### Phase 6: Packs
+### Phase 7: Packs
 
 Filing readiness, VAT, payroll cutoff, SARS notices, corporate/provisional, CIPC/BO, bookkeeping, audit evidence.
 
-### Phase 7: Paystack
+### Phase 8: Paystack
 
 Only after auth, RLS, and core journey. Test mode, signed webhook, idempotency, verification, failures/retries.
 
-### Phase 8: Email/reminders
+### Phase 9: Email/reminders
 
 Practice-branded transactional email, consent/opt-out records, delivery/bounce, stop conditions, history.
 
-### Phase 9: Hardening
+### Phase 10: Hardening
 
 Lint, strict TypeScript, unit tests, RLS tests, Playwright, desktop/mobile screenshots, accessibility, security headers, error/loading/empty states, backup/restore, staging/production.
-
 ---
 
 ## 16. Antigravity Control Prompt
@@ -653,6 +673,7 @@ Use one phase per task:
     Do not redesign architecture.
     Do not add unrequested dependencies.
     Do not begin later phases.
+    Preserve the existing Tax workspace unless the hub shell explicitly requires a routing wrapper.
 
     Before editing, state:
     - current architecture
@@ -668,7 +689,6 @@ Use one phase per task:
     - stop
 
 Commit after each successful phase. Never combine auth replacement, database redesign, Paystack, landing redesign, workflow packs, and email delivery in one generation.
-
 ---
 
 ## 17. Immediate Antigravity Task
@@ -702,8 +722,11 @@ This repository is an older static multi-sector LogTraq hub. Its README is outda
 
     Recommend one option with evidence.
 
-    Do not code, delete, migrate a database, or configure production.
+    Also answer one product question:
+    - Should the current tax workspace stay intact inside the new hub shell, or should it be rewritten during the hub build?
+    - State the minimum changes required to make the hub work without breaking Tax.
 
+    Do not code, delete, migrate a database, or configure production.
 ---
 
 ## 18. Sales and Outreach
@@ -798,6 +821,13 @@ LogTraq is:
 
 > A South African finance-practice operations platform that turns client obligations into contextual requests, complete evidence, controlled professional review, explicit approval, defensible handoff, and a permanent audit trail.
 
-First commercial entry: filing-season readiness. Recurring foundation: VAT and payroll. Durable platform: the shared obligation and evidence engine.
+First commercial entry: filing-season readiness inside a broader finance hub.
+
+Recurring foundation: VAT and payroll.
+
+Durable platform: the shared obligation and evidence engine.
+
+Hub rule: keep Tax intact, add the hub above it, and let future modules remain locked until they are real.
 
 Antigravity must preserve this thesis before changing code.
+
