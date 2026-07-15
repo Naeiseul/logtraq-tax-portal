@@ -5,13 +5,301 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="LogTraq Tax Portal helps South African tax practitioners collect client documents, track filing progress, and reduce WhatsApp admin."
+      content="LogTraq | Finance operations software for South African accounting, bookkeeping, and tax practices. Track client obligations, collect evidence, and ensure audit readiness."
     />
-    <title>LogTraq Tax Portal</title>
+    <title>LogTraq | Finance Operations Software</title>
+    <!-- Google Fonts: Geist-like sans-serif -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div id="app"></div>
+    <!-- 1. LANDING PAGE -->
+    <div id="landing-page">
+      <!-- Navigation -->
+      <nav class="topbar">
+        <div class="nav-container">
+          <a class="brand" href="#" aria-label="LogTraq home">
+            <span class="brand-mark">LQ</span>
+            <span class="brand-name">LogTraq</span>
+          </a>
+          <ul class="nav-links">
+            <li><a href="#product">Product</a></li>
+            <li><a href="#packs">Workflow Packs</a></li>
+            <li><a href="#security">Security &amp; POPIA</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+          </ul>
+          <div class="nav-actions">
+            <button class="ghost-button" id="navSignIn">Sign In</button>
+            <a class="primary-button" id="navWalkthrough" href="#" target="_blank" rel="noreferrer">Request Walkthrough</a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Hero Section -->
+      <header class="hero-section" id="product">
+        <div class="hero-container">
+          <p class="eyebrow">LogTraq | Finance Operations Software</p>
+          <h1>Finance operations software for South African practices.</h1>
+          <p class="hero-subtitle">
+            Collect client evidence, track readiness, route professional review, and keep every deadline defensible without replacing your accounting, payroll, or filing software.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-button large-button" id="heroCTA" href="#" target="_blank" rel="noreferrer">Request a practice walkthrough</a>
+            <button class="secondary-button large-button" id="heroDemo">Open interactive demo</button>
+          </div>
+          
+          <!-- Hero Product Image -->
+          <div class="hero-image-wrapper">
+            <img src="./assets/portal-workspace.webp" alt="LogTraq Practitioner Workspace Dashboard" class="hero-preview-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="hero-preview-placeholder" style="display:none;">
+              <div class="placeholder-header">
+                <span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span>
+                <span class="placeholder-title">LogTraq Practitioner Dashboard</span>
+              </div>
+              <div class="placeholder-body">
+                <div class="placeholder-sidebar"></div>
+                <div class="placeholder-content">
+                  <div class="placeholder-row"></div>
+                  <div class="placeholder-row"></div>
+                  <div class="placeholder-row"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- How it Works (Workflow) -->
+      <section class="section-container" id="workflow">
+        <div class="section-heading">
+          <p class="eyebrow">Seamless Administration</p>
+          <h2>The client-action layer above your stack</h2>
+          <p class="section-desc">LogTraq sits between your practice, your clients, and compliance systems. Here is how it works:</p>
+        </div>
+        <div class="workflow-steps">
+          <div class="step-card">
+            <div class="step-number">01</div>
+            <h3>Define Obligations</h3>
+            <p>Set recurring tax, VAT, payroll, or CIPC tasks with custom checklists and required document slots for each client.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">02</div>
+            <h3>Collect Client Evidence</h3>
+            <p>Clients receive secure, passwordless links to upload documents directly from their phones or desktop computers.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">03</div>
+            <h3>Review, Approve &amp; File</h3>
+            <p>Audit readiness at a glance. Flag exceptions, route files for practitioner sign-off, and record final submission proof.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Feature Split Section: Cockpit & Client Portal -->
+      <section class="split-features-section">
+        <div class="section-container">
+          <div class="split-row">
+            <div class="split-text">
+              <span class="badge">Practitioner Workspace</span>
+              <h2>Your daily cockpit. Exception-first visibility.</h2>
+              <p>Stop digging through emails and chat threads. The Today workspace answers what needs attention immediately:</p>
+              <ul class="feature-bullets">
+                <li>Which clients are blocking progress or missing files</li>
+                <li>New client uploads awaiting professional review</li>
+                <li>Assigned obligations nearing statutory deadlines</li>
+                <li>Unresolved exceptions flagged with next action dates</li>
+              </ul>
+            </div>
+            <div class="split-visual">
+              <div class="mock-card">
+                <div class="mock-card-header">Filing Status Overview</div>
+                <div class="mock-stats">
+                  <div class="mock-stat"><span>Active Clients</span><strong>42</strong></div>
+                  <div class="mock-stat"><span>Ready to File</span><strong>18</strong></div>
+                  <div class="mock-stat"><span>Missing Docs</span><strong>27</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="split-row reverse">
+            <div class="split-text">
+              <span class="badge">Branded Client Portal</span>
+              <h2>Zero-friction document uploads for clients.</h2>
+              <p>Clients don't need another username and password. LogTraq provides secure, branded, passwordless portals optimized for mobile:</p>
+              <ul class="feature-bullets">
+                <li>Simple checklist of pending document uploads</li>
+                <li>Camera capture and mobile upload capability</li>
+                <li>Direct question threads pinned to specific file requests</li>
+                <li>Explicit client declarations and review approval sign-offs</li>
+              </ul>
+            </div>
+            <div class="split-visual">
+              <div class="mock-card">
+                <div class="mock-card-header">Client Tasks: A. Mokoena</div>
+                <div class="mock-tasks">
+                  <div class="mock-task-item done"><span>ID Document</span><em>Uploaded</em></div>
+                  <div class="mock-task-item done"><span>IRP5 / IT3(a)</span><em>Uploaded</em></div>
+                  <div class="mock-task-item alert"><span>Medical Aid Certificate</span><em>Upload Required</em></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Workflow Packs -->
+      <section class="section-container" id="packs">
+        <div class="section-heading">
+          <p class="eyebrow">Targeted Operations</p>
+          <h2>Workflow Packs</h2>
+          <p class="section-desc">Modular operational packs configured to match South African compliance timelines.</p>
+        </div>
+        <div class="packs-grid">
+          <div class="pack-card">
+            <div class="pack-icon">📁</div>
+            <h3>Personal Income Tax</h3>
+            <p>IRP5/IT3, medical aid, retirement annuities, travel logs, client approvals, and verification tracking.</p>
+          </div>
+          <div class="pack-card">
+            <div class="pack-icon">📈</div>
+            <h3>Provisional &amp; Corporate Tax</h3>
+            <p>Year-end IRP6 schedules, practitioner estimates, client declarations, and company tax readiness.</p>
+          </div>
+          <div class="pack-card">
+            <div class="pack-icon">📊</div>
+            <h3>VAT &amp; Bookkeeping</h3>
+            <p>Month-end document packs, bank coverage audits, invoices, journal entries, and period lock gates.</p>
+          </div>
+          <div class="pack-card">
+            <div class="pack-icon">👥</div>
+            <h3>Payroll &amp; Employer Compliance</h3>
+            <p>Remuneration changes, starters/leavers evidence, variance analysis, and EMP201/EMP501 readiness.</p>
+          </div>
+          <div class="pack-card">
+            <div class="pack-icon">🏢</div>
+            <h3>Company Secretarial &amp; CIPC</h3>
+            <p>CIPC annual returns, beneficial ownership declarations, director changes, and share registers.</p>
+          </div>
+          <div class="pack-card">
+            <div class="pack-icon">✉️</div>
+            <h3>SARS Notices &amp; Reviews</h3>
+            <p>Verification letter processing, deadline monitors, indexed response bundles, and audit outcomes.</p>
+          </div>
+          <div class="pack-card">
+            <div class="pack-icon">🛡️</div>
+            <h3>Audit Evidence</h3>
+            <p>Prepared-by-client (PBC) checklists, secure auditor portal access, query threads, and representation locks.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Compatibility Section -->
+      <section class="compatibility-section">
+        <div class="section-container">
+          <div class="section-heading">
+            <p class="eyebrow">Works Alongside Your Stack</p>
+            <h2>Compatible with your existing tools</h2>
+            <p class="section-desc">LogTraq operates as the administrative intake layer. We do not replace your production systems.</p>
+          </div>
+          <div class="compat-logos">
+            <div class="logo-badge">SARS eFiling</div>
+            <div class="logo-badge">CIPC</div>
+            <div class="logo-badge">Sage</div>
+            <div class="logo-badge">Xero</div>
+            <div class="logo-badge">Payroll Software</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Security & POPIA -->
+      <section class="section-container" id="security">
+        <div class="section-heading">
+          <p class="eyebrow">Compliance First</p>
+          <h2>Regulatory &amp; Security Boundaries</h2>
+          <p class="section-desc">Protecting client information and respecting statutory frameworks is built into our core.</p>
+        </div>
+        <div class="security-grid">
+          <div class="security-card">
+            <h4>POPIA Baseline &amp; Encryption</h4>
+            <p>Granular Row Level Security (RLS) restricts access by tenant. Private storage folders require short-lived, signed download tokens. Built-in malware scanning on upload.</p>
+          </div>
+          <div class="security-card">
+            <h4>No Credential Sharing</h4>
+            <p>Practitioners do not store or share SARS eFiling or CIPC login credentials inside LogTraq. Hand-ins and filings occur directly via the professional's browser session.</p>
+          </div>
+          <div class="security-card">
+            <h4>Strict Professional Control</h4>
+            <p>LogTraq does not write tax opinions, calculate returns, sign off audits, or submit filings autonomously. Your registered, accountable professional review holds every sign-off.</p>
+          </div>
+          <div class="security-card">
+            <h4>Tenant Isolation &amp; Audit Logs</h4>
+            <p>Every download, upload, status change, and client approval registers an immutable audit trace. Support staff hold zero document access rights by default.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section class="pricing-section" id="pricing">
+        <div class="section-container">
+          <div class="section-heading">
+            <p class="eyebrow">Pricing Model</p>
+            <h2>Simple, predictable investment</h2>
+            <p class="section-desc">Get set up quickly with zero hidden administrative costs.</p>
+          </div>
+          <div class="pricing-card-wrapper">
+            <div class="pricing-card featured">
+              <span class="pricing-badge">First sellable offer</span>
+              <h3>Filing Season Pilot</h3>
+              <div class="price-value">R800<span>/ setup</span></div>
+              <p class="price-purpose">Ideal for small tax practices, bookkeepers, and payroll offices launching client document portals.</p>
+              <ul class="pricing-bullets">
+                <li>Practice branding &amp; portal customisation</li>
+                <li>Client database upload (CSV)</li>
+                <li>Personal Tax (ITR12) workflow pack setup</li>
+                <li>Ready-to-use document upload checklists</li>
+                <li>WhatsApp outreach template setup</li>
+              </ul>
+              <a class="primary-button" id="pricingCTA" href="#" target="_blank" rel="noreferrer">Request practice walkthrough</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Call to Action -->
+      <section class="cta-bottom-section">
+        <div class="cta-container">
+          <h2>Ready to streamline client evidence collection?</h2>
+          <p>Request a 90-second demonstration of the client document portal.</p>
+          <a class="primary-button large-button" id="bottomCTA" href="#" target="_blank" rel="noreferrer">Request a practice walkthrough</a>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="footer-container">
+          <div class="footer-left">
+            <span class="brand-logo">LQ</span>
+            <span class="footer-desc">LogTraq | finance operations software</span>
+          </div>
+          <p class="legal-disclaimer">
+            Disclaimer: LogTraq supplies software tools and administrative management. We are not registered accountants, auditors, financial advisers, or debt collectors. The practice's licensed professional makes every legal and compliance decision.
+          </p>
+          <div class="footer-copyright">
+            &copy; 2026 LogTraq. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- 2. INTERACTIVE DEMO PORTAL (HIDDEN BY DEFAULT) -->
+    <div id="portal-page" class="hidden">
+      <!-- Portal dashboard is injected dynamically by app.js -->
+    </div>
+
+    <!-- Script loading -->
     <script type="module" src="./app.js"></script>
   </body>
 </html>
