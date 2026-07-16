@@ -1,5 +1,3 @@
-// LogTraq Finance Operations Application Logic
-
 const journeySteps = [
   "Intake",
   "Documents",
@@ -20,13 +18,12 @@ const requiredDocs = [
   "Other supporting documents",
 ];
 
-// Mock Client Data - Focus entirely on Finance/Tax Obligations
 const clients = [
   {
     name: "A. Mokoena",
     email: "amokoena@example.com",
     phone: "+27 72 000 0001",
-    status: 2, // Practitioner review
+    status: 2,
     income: "IRP5 received",
     missing: ["Medical aid certificate", "Travel logbook"],
     uploaded: ["ID document", "IRP5 / IT3(a)"],
@@ -36,7 +33,7 @@ const clients = [
     name: "L. Naidoo",
     email: "lnaidoo@example.com",
     phone: "+27 73 000 0002",
-    status: 3, // Ready to submit
+    status: 4,
     income: "Ready with deductions",
     missing: [],
     uploaded: [
@@ -44,9 +41,6 @@ const clients = [
       "IRP5 / IT3(a)",
       "Medical aid certificate",
       "Retirement annuity certificate",
-      "Travel logbook",
-      "Donation certificate",
-      "Other supporting documents",
     ],
     updated: "Yesterday, 17:42",
   },
@@ -54,7 +48,7 @@ const clients = [
     name: "T. Dlamini",
     email: "tdlamini@example.com",
     phone: "+27 74 000 0003",
-    status: 1, // Documents pending
+    status: 1,
     income: "Awaiting first upload",
     missing: ["ID document", "IRP5 / IT3(a)", "Medical aid certificate"],
     uploaded: [],
@@ -62,22 +56,90 @@ const clients = [
   },
 ];
 
+const products = [
+  {
+    id: "finance",
+    label: "Finance",
+    title: "Tax client portal",
+    audience: "For tax practitioners, bookkeepers, and small finance offices",
+    description: "Collect documents, track missing files, and show clients their filing progress in one branded workspace.",
+    status: "Ready to demo",
+    cta: "Open finance demo",
+  },
+  {
+    id: "education",
+    label: "Education",
+    title: "Study tracker",
+    audience: "For learners, tutors, schools, and support programs",
+    description: "Track study sessions, subject progress, applications, and learner accountability from one login.",
+    status: "Returning soon",
+    cta: "Education login",
+  },
+  {
+    id: "applications",
+    label: "Applications",
+    title: "Bursary and university tracker",
+    audience: "For students, parents, and advisors",
+    description: "Manage deadlines, required documents, application status, and follow-ups without losing the thread.",
+    status: "Planned",
+    cta: "Preview login",
+  },
+  {
+    id: "clientops",
+    label: "Business",
+    title: "Client workflow portal",
+    audience: "For service businesses that need intake, documents, and status updates",
+    description: "A reusable portal pattern for any business that spends too much time chasing clients for information.",
+    status: "Planned",
+    cta: "Explore use case",
+  },
+];
+
+const app = document.querySelector("#app");
 const config = {
   salesWhatsApp: "27793257256",
   ...(window.LOGTRAQ_CONFIG || {}),
 };
-
 let selectedClientIndex = 0;
-let clientMode = false; // Toggle between Practice view and Client view
+let clientMode = false;
+let supabaseClientPromise;
 
-// Helper to generate WhatsApp links
-function getWhatsAppLink(messageText) {
-  const cleanPhone = config.salesWhatsApp.replace(/[^0-9]/g, "");
-  const encodedText = encodeURIComponent(messageText);
-  return `https://wa.me/${cleanPhone}?text=${encodedText}`;
+function salesHref(topic = "LogTraq") {
+  if (!config.salesWhatsApp) return "#pricing";
+  const message = encodeURIComponent(`Hi LogTraq, I'm interested in ${topic}`);
+  return `https://wa.me/${config.salesWhatsApp.replace(/[^0-9]/g, "")}?text=${message}`;
 }
 
-// Element creation helper
+async function getSupabaseClient() {
+  if (!config.supabaseUrl || !config.supabaseAnonKey) return null;
+  if (!supabaseClientPromise) {
+    supabaseClientPromise = import("https://esm.sh/@supabase/supabase-js@2").then(({ createClient }) =>
+      createClient(config.supabaseUrl, config.supabaseAnonKey)
+    );
+  }
+  return supabaseClientPromise;
+}
+
+async function uploadTaxDocument(client, documentType, file) {
+  const supabase = await getSupabaseClient();
+  if (!supabase) return { mode: "demo" };
+
+  const bucket = config.storageBucket || "tax-documents";
+  const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+  const path = `demo-practice/${client.email || client.name}/${Date.now()}-${cleanName}`;
+  const uploadResult = await supabase.storage.from(bucket).upload(path, file, {
+    contentType: file.type || "application/octet-stream",
+    upsert: false,
+  });
+
+  if (uploadResult.error) {
+    console.warn("Supabase upload failed; keeping demo state only.", uploadResult.error);
+    return { mode: "demo", error: uploadResult.error.message };
+  }
+
+  return { mode: "supabase", path };
+}
+
 function el(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -93,7 +155,6 @@ function statusLabel(status) {
   return journeySteps[status] || journeySteps[0];
 }
 
-// Render progress timeline bar
 function renderJourney(status, compact = false) {
   const wrap = el("div", compact ? "journey compact" : "journey");
   const line = el("div", "journey-line");
@@ -108,11 +169,6 @@ function renderJourney(status, compact = false) {
     const dot = el("span", index <= status ? "dot done" : "dot");
     const label = el("strong", "", step);
     const small = el("small", "", index < status ? "Done" : index === status ? "Current" : "Pending");
-    
-    if (index === status) {
-      point.classList.add("active");
-    }
-    
     point.append(dot, label, small);
     wrap.appendChild(point);
   });
@@ -120,7 +176,151 @@ function renderJourney(status, compact = false) {
   return wrap;
 }
 
-// Render list of clients for the dashboard sidebar
+function renderLanding() {
+  const shell = el("main", "site-shell");
+
+  const nav = el("nav", "topbar");
+  nav.innerHTML = `
+    <a class="brand" href="#" aria-label="LogTraq home">
+      <span class="brand-mark">LQ</span>
+      <span>LogTraq</span>
+    </a>
+    <div class="nav-actions">
+      <a class="ghost-button" href="#products">Products</a>
+      <button class="ghost-button" id="viewDemo">Finance demo</button>
+      <a class="primary-button" href="${salesHref("a LogTraq portal")}" target="_blank" rel="noreferrer">WhatsApp LogTraq</a>
+    </div>
+  `;
+
+  const hero = el("section", "hero");
+  hero.innerHTML = `
+    <div class="hero-copy">
+      <p class="eyebrow">One domain. Multiple portals.</p>
+      <h1>LogTraq turns messy admin into tracked client journeys.</h1>
+      <p class="hero-text">Choose the workspace you need: finance, education, applications, or client operations. Each product uses the same idea: collect information, track progress, and keep people moving.</p>
+      <div class="hero-actions">
+        <button class="primary-button" id="openPortal">Open finance demo</button>
+        <a class="secondary-link" href="#products">Choose a product</a>
+      </div>
+    </div>
+    <div class="hero-media">
+      <img src="./assets/portal-workspace.webp" alt="Laptop showing a professional dashboard" />
+      <div class="floating-stat">
+        <span>First product live</span>
+        <strong>Finance</strong>
+      </div>
+    </div>
+  `;
+
+  const productSection = el("section", "section-block product-section");
+  productSection.id = "products";
+  productSection.innerHTML = `
+    <div class="section-heading">
+      <p class="eyebrow">Product lineup</p>
+      <h2>One LogTraq brand, different login paths.</h2>
+      <p>Visitors do not need a different domain for every offer. They land on LogTraq, choose the workspace that fits them, and enter the right portal.</p>
+    </div>
+  `;
+  const productGrid = el("div", "product-grid");
+  products.forEach((product) => {
+    const card = el("article", `product-card ${product.id}`);
+    card.innerHTML = `
+      <div class="product-meta">
+        <span>${product.label}</span>
+        <em>${product.status}</em>
+      </div>
+      <h3>${product.title}</h3>
+      <p class="audience">${product.audience}</p>
+      <p>${product.description}</p>
+      <button class="${product.id === "finance" ? "primary-button" : "secondary-button"}" data-product="${product.id}">${product.cta}</button>
+    `;
+    productGrid.appendChild(card);
+  });
+  productSection.appendChild(productGrid);
+
+  const journey = el("section", "section-block tracker-preview");
+  journey.innerHTML = `
+    <div>
+      <p class="eyebrow">Reusable portal engine</p>
+      <h2>Every product can use a progress map.</h2>
+      <p>Finance clients can track tax filing. Students can track study and applications. Service clients can track intake, documents, review, and completion.</p>
+    </div>
+  `;
+  journey.appendChild(renderJourney(3));
+
+  const grid = el("section", "value-grid");
+  [
+    ["One brand", "LogTraq stays the umbrella, so the domain can support more than one market without looking scattered."],
+    ["Separate workspaces", "Finance, education, applications, and business portals can each have their own login and dashboard."],
+    ["Same engine", "Intake, uploads, progress tracking, statuses, and admin dashboards can be reused across products."],
+  ].forEach(([title, body]) => {
+    const card = el("article", "value-card");
+    card.innerHTML = `<h3>${title}</h3><p>${body}</p>`;
+    grid.appendChild(card);
+  });
+
+  const pricing = el("section", "pricing-band");
+  pricing.id = "pricing";
+  pricing.innerHTML = `
+    <div>
+      <p class="eyebrow">First sellable offer</p>
+      <h2>Finance portal launch setup: R800.</h2>
+      <p>The first product to sell is the tax client portal because filing season creates urgent demand. The domain still remains a multi-product LogTraq hub.</p>
+    </div>
+    <a class="primary-button" href="${salesHref("the R800 finance portal setup")}" target="_blank" rel="noreferrer">Claim launch setup</a>
+  `;
+
+  shell.append(nav, hero, productSection, journey, grid, pricing);
+  app.replaceChildren(shell);
+
+  document.querySelector("#openPortal").addEventListener("click", () => renderPortal());
+  document.querySelector("#viewDemo").addEventListener("click", () => renderPortal());
+  document.querySelectorAll("[data-product]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const product = products.find((item) => item.id === button.dataset.product);
+      if (product?.id === "finance") renderPortal();
+      else renderProductLogin(product);
+    });
+  });
+}
+
+function renderProductLogin(product) {
+  const shell = el("main", "login-shell");
+  shell.innerHTML = `
+    <section class="login-preview">
+      <a class="brand" href="#" id="loginHome">
+        <span class="brand-mark">LQ</span>
+        <span>LogTraq</span>
+      </a>
+      <div class="login-card">
+        <p class="eyebrow">${product.label} workspace</p>
+        <h1>${product.title}</h1>
+        <p>${product.description}</p>
+        <label>
+          Email
+          <input type="email" placeholder="you@example.com" />
+        </label>
+        <label>
+          Password
+          <input type="password" placeholder="Password" />
+        </label>
+        <button class="primary-button">Login preview</button>
+        <a class="secondary-link" href="${salesHref(product.title)}" target="_blank" rel="noreferrer">Ask about this product</a>
+      </div>
+      <button class="ghost-button" id="backToHub">Back to product hub</button>
+    </section>
+  `;
+  app.replaceChildren(shell);
+  document.querySelector("#loginHome").addEventListener("click", renderLanding);
+  document.querySelector("#backToHub").addEventListener("click", renderLanding);
+}
+
+function metric(label, value, detail) {
+  const node = el("article", "metric-card");
+  node.innerHTML = `<span>${label}</span><strong>${value}</strong><small>${detail}</small>`;
+  return node;
+}
+
 function renderClientList() {
   const list = el("div", "client-list");
   clients.forEach((client, index) => {
@@ -141,220 +341,128 @@ function renderClientList() {
   return list;
 }
 
-// Render document slots (can be clicked to toggle mock upload)
 function renderDocuments(client) {
   const wrap = el("div", "doc-grid");
   requiredDocs.forEach((doc) => {
     const uploaded = client.uploaded.includes(doc);
-    const item = el("div", uploaded ? "doc-slot uploaded" : "doc-slot");
+    const item = el("label", uploaded ? "doc-slot uploaded" : "doc-slot");
     item.innerHTML = `
-      <strong>${doc}</strong>
-      <small>${uploaded ? "Uploaded &amp; Locked" : "Click to simulate upload"}</small>
+      <span>
+        <strong>${doc}</strong>
+        <small>${uploaded ? "Uploaded" : "Waiting for client"}</small>
+      </span>
+      <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
     `;
-    
-    item.addEventListener("click", () => {
-      if (uploaded) {
-        // Toggle off (remove document)
-        client.uploaded = client.uploaded.filter(d => d !== doc);
-        if (!client.missing.includes(doc)) {
-          client.missing.push(doc);
-        }
-      } else {
-        // Toggle on (upload document)
-        client.uploaded.push(doc);
-        client.missing = client.missing.filter(d => d !== doc);
-      }
-      
-      // Recalculate status based on uploaded documents count
-      const uploadRatio = client.uploaded.length / requiredDocs.length;
-      if (uploadRatio === 0) {
-        client.status = 0; // Intake
-      } else if (uploadRatio < 0.5) {
-        client.status = 1; // Documents
-      } else if (uploadRatio < 1.0) {
-        client.status = 2; // Practitioner review
-      } else {
-        client.status = 3; // Ready to submit
-      }
-      
-      client.updated = "Just now (simulated)";
+    item.querySelector("input").addEventListener("change", async (event) => {
+      if (!event.target.files.length) return;
+      const result = await uploadTaxDocument(client, doc, event.target.files[0]);
+      if (!client.uploaded.includes(doc)) client.uploaded.push(doc);
+      client.missing = client.missing.filter((missing) => missing !== doc);
+      client.updated = result.mode === "supabase" ? "Uploaded to Supabase" : "Demo upload only";
       renderPortal();
     });
-    
     wrap.appendChild(item);
   });
   return wrap;
 }
 
-// Renders the interactive mockup portal inside #portal-page
 function renderPortal() {
-  const portalPage = document.querySelector("#portal-page");
-  if (!portalPage) return;
-  
   const client = clients[selectedClientIndex];
-  
-  // Calculate dynamic metrics
-  const totalClients = clients.length;
-  const readyToFile = clients.filter(c => c.uploaded.length === requiredDocs.length).length;
-  const missingDocsCount = clients.reduce((acc, c) => acc + c.missing.length, 0);
+  const shell = el("main", "portal-shell");
 
-  const shell = el("div", "portal-shell");
-
-  // Sidebar
   const sidebar = el("aside", "sidebar");
   sidebar.innerHTML = `
     <a class="brand portal-brand" href="#">
       <span class="brand-mark">LQ</span>
-      <span>LogTraq Hub</span>
+      <span>LogTraq Tax</span>
     </a>
-    <button class="side-link active">Obligations Workspace</button>
-    <button class="side-link">Clients (Practices)</button>
-    <button class="side-link">Evidence Bundles</button>
-    <button class="side-link">Security Settings</button>
-    <button class="side-link muted" id="backToLandingBtn">← Return to Landing Page</button>
+    <button class="side-link active">Dashboard</button>
+    <button class="side-link">Clients</button>
+    <button class="side-link">Documents</button>
+    <button class="side-link">Settings</button>
+    <button class="side-link muted" id="backHome">Landing page</button>
   `;
 
-  // Portal Content Main Section
   const content = el("section", "portal-content");
-  
-  // Header with toggle
   const header = el("header", "portal-header");
   header.innerHTML = `
     <div>
-      <p class="eyebrow">Interactive Mockup Workspace</p>
-      <h1>${clientMode ? "Branded Client View" : "Practitioner cockpit"}</h1>
+      <p class="eyebrow">Practitioner workspace</p>
+      <h1>${clientMode ? "Client progress view" : "Tax practice dashboard"}</h1>
     </div>
     <div class="toggle-group" role="group" aria-label="View mode">
-      <button class="${clientMode ? "" : "active"}" id="switchToPractice">Practice Admin</button>
-      <button class="${clientMode ? "active" : ""}" id="switchToClient">Client Portal</button>
+      <button class="${clientMode ? "" : "active"}" id="practiceMode">Practice</button>
+      <button class="${clientMode ? "active" : ""}" id="clientMode">Client</button>
     </div>
   `;
 
-  // Metric Cards
   const metrics = el("section", "metrics");
   metrics.append(
-    metric("Active clients", totalClients.toString(), "In progress tax season queue"),
-    metric("Ready to file", readyToFile.toString(), "All required files collected"),
-    metric("Pending files", missingDocsCount.toString(), "Client uploads remaining")
+    metric("Active clients", "42", "Tax season queue"),
+    metric("Ready to file", "18", "All required docs received"),
+    metric("Missing documents", "27", "Follow-ups needed")
   );
 
-  // Split View / Body
   if (clientMode) {
-    // Client portal perspective
     const clientView = el("section", "client-view");
     clientView.innerHTML = `
       <div class="client-hero">
-        <p class="eyebrow">Client Workspace for ${client.name}</p>
-        <h2>Status of Tax Return: ${statusLabel(client.status)}</h2>
-        <p>Your practitioner has requested the files listed below. Click on any slot to simulate uploading that document. Files marked in green are verified and locked.</p>
+        <p class="eyebrow">For ${client.name}</p>
+        <h2>Your tax return is at: ${statusLabel(client.status)}</h2>
+        <p>Upload the remaining documents below. Your practitioner will update this progress tracker as your return moves through review and submission.</p>
       </div>
     `;
-    
     clientView.append(renderJourney(client.status), renderDocuments(client));
     content.append(header, clientView);
   } else {
-    // Practitioner cockpit perspective
     const workspace = el("section", "workspace-grid");
-    
-    // Left: Client list panel
-    const leftPanel = el("div", "panel");
-    leftPanel.innerHTML = `
+    const left = el("div", "panel");
+    left.innerHTML = `
       <div class="panel-head">
         <div>
-          <p class="eyebrow">South Africa Tax Queue</p>
-          <h2> FTR / ITR12 Queue</h2>
+          <p class="eyebrow">Client queue</p>
+          <h2>Today&apos;s filing work</h2>
         </div>
       </div>
     `;
-    leftPanel.appendChild(renderClientList());
+    left.appendChild(renderClientList());
 
-    // Right: Selected Client detailed workflow
-    const rightPanel = el("div", "panel client-detail");
-    rightPanel.innerHTML = `
+    const right = el("div", "panel client-detail");
+    right.innerHTML = `
       <div class="panel-head">
         <div>
-          <p class="eyebrow">Practitioner Review Action</p>
+          <p class="eyebrow">Selected client</p>
           <h2>${client.name}</h2>
-          <p>${client.income} • Last updated: ${client.updated}</p>
+          <p>${client.income}</p>
         </div>
         <span class="status-pill">${statusLabel(client.status)}</span>
       </div>
     `;
-    
-    // Append compact journey and lists
-    rightPanel.append(renderJourney(client.status, true));
-    
-    // Exception / missing info box
-    const missingBox = el("div", "missing-box");
-    missingBox.innerHTML = `
-      <div>
-        <h3>${client.missing.length ? "Missing Evidence" : "Filing Ready"}</h3>
-        <p>${client.missing.length ? client.missing.join(", ") : "All required client documents are successfully uploaded &amp; reviewed."}</p>
-      </div>
-      <a class="secondary-button" href="https://wa.me/${client.phone.replace(/[^0-9]/g, "")}?text=Hi%20${encodeURIComponent(client.name)}%2C%20please%20upload%20your%20remaining%20tax%20documents%20to%20your%20LogTraq%20portal." target="_blank" rel="noreferrer">WhatsApp follow-up</a>
+    right.append(renderJourney(client.status, true));
+    const missing = el("div", "missing-box");
+    missing.innerHTML = `
+      <h3>${client.missing.length ? "Missing documents" : "Ready for practitioner review"}</h3>
+      <p>${client.missing.length ? client.missing.join(", ") : "All required launch-demo documents are uploaded."}</p>
+      <a class="secondary-button" href="https://wa.me/${client.phone.replace(/[^0-9]/g, "")}?text=Hi%2C%20please%20upload%20your%20remaining%20tax%20documents%20to%20your%20LogTraq%20portal." target="_blank" rel="noreferrer">WhatsApp follow-up</a>
     `;
-    
-    rightPanel.append(missingBox, renderDocuments(client));
-    workspace.append(leftPanel, rightPanel);
+    right.append(missing, renderDocuments(client));
+
+    workspace.append(left, right);
     content.append(header, metrics, workspace);
   }
 
   shell.append(sidebar, content);
-  
-  // Replace portal-page children and bind events
-  portalPage.replaceChildren(shell);
-  
-  // Event Bindings
-  document.querySelector("#backToLandingBtn").addEventListener("click", () => {
-    document.body.classList.remove("portal-active");
-  });
-  
-  document.querySelector("#switchToPractice").addEventListener("click", () => {
+  app.replaceChildren(shell);
+
+  document.querySelector("#backHome").addEventListener("click", renderLanding);
+  document.querySelector("#practiceMode").addEventListener("click", () => {
     clientMode = false;
     renderPortal();
   });
-  
-  document.querySelector("#switchToClient").addEventListener("click", () => {
+  document.querySelector("#clientMode").addEventListener("click", () => {
     clientMode = true;
     renderPortal();
   });
 }
 
-// Single metric card generator
-function metric(label, value, detail) {
-  const node = el("article", "metric-card");
-  node.innerHTML = `<span>${label}</span><strong>${value}</strong><small>${detail}</small>`;
-  return node;
-}
-
-// Setup links and dynamic listeners on landing page load
-function initializeLandingPage() {
-  const walkthroughMsg = "Hi LogTraq, I would like to request a practice walkthrough of the finance operations software.";
-  const walkthroughLink = getWhatsAppLink(walkthroughMsg);
-  
-  // Bind CTA links
-  const walkthroughBtn = document.querySelector("#navWalkthrough");
-  const heroCTABtn = document.querySelector("#heroCTA");
-  const pricingCTABtn = document.querySelector("#pricingCTA");
-  const bottomCTABtn = document.querySelector("#bottomCTA");
-  
-  if (walkthroughBtn) walkthroughBtn.href = walkthroughLink;
-  if (heroCTABtn) heroCTABtn.href = walkthroughLink;
-  if (pricingCTABtn) pricingCTABtn.href = getWhatsAppLink("Hi LogTraq, I'm interested in the Filing Season Pilot for R800.");
-  if (bottomCTABtn) bottomCTABtn.href = walkthroughLink;
-
-  // Bind SignIn and Demo triggers to activate interactive portal
-  const navSignIn = document.querySelector("#navSignIn");
-  const heroDemo = document.querySelector("#heroDemo");
-  
-  const activateDemo = () => {
-    document.body.classList.add("portal-active");
-    renderPortal();
-  };
-  
-  if (navSignIn) navSignIn.addEventListener("click", activateDemo);
-  if (heroDemo) heroDemo.addEventListener("click", activateDemo);
-}
-
-// Initialize landing triggers
-initializeLandingPage();
+renderLanding();

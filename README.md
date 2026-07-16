@@ -7,10 +7,8 @@ This repository is intentionally separate from the previous LogTraq education/st
 ## Product strategy
 
 - `logtraq.co.za` acts as the main product hub.
-- Visitors choose a workspace: Education, Finance, Health, or Applications.
+- Visitors choose a workspace: Finance, Education, Applications, or Business.
 - Each workspace can have its own login and dashboard while sharing the same brand and technical foundation.
-- The homepage should stay short: product tiles first, no long landing-page sections.
-- The Education tile opens the bundled academic LogTraq app at `/education/`.
 
 ## First sellable offer
 
