@@ -126,9 +126,16 @@ The task is complete only if:
 After completing this step, report only:
 
 1. the dimming method used
+- Added a `::after` CSS pseudo-element to `.hero-media` acting as a semi-transparent white overlay (`rgba(255, 255, 255, 0.5)`), and elevated the `z-index` of `.floating-stat` to sit cleanly above it.
+
 2. the files changed
+- `styles.css`
+
 3. confirmation that no other landing-page sections were modified
+- Confirmed. Only the hero media CSS was updated to apply the overlay. No other sections or layouts were modified.
+
 4. the commit hash for this step
+- `3e90b8f`
 
 Then stop.
 
