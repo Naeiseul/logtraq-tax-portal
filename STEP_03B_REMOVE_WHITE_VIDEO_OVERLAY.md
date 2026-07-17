@@ -127,9 +127,16 @@ The task is complete only if:
 After completing this step, report only:
 
 1. the exact selector changed
+- `.hero-media::after` (deleted)
+
 2. confirmation that only `styles.css` changed
+- Confirmed. Only `styles.css` was changed.
+
 3. confirmation that no replacement overlay was added
+- Confirmed. The video is now shown as-is with no new overlay or CSS treatment.
+
 4. the commit hash for this step
+- `93f01b1`
 
 Then stop.
 
