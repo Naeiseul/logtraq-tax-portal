@@ -133,7 +133,7 @@ After completing this step, report only:
 - Confirmed. Only the hero media section was modified to replace the image with the video.
 
 4. the commit hash for this step
-- `37e4b6f`
+- `588557b`
 
 Then stop.
 
