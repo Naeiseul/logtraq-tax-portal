@@ -204,7 +204,7 @@ function renderLanding() {
       </div>
     </div>
     <div class="hero-media">
-      <img src="./assets/portal-workspace.webp" alt="Laptop showing a professional dashboard" />
+      <video src="./assets/dash-bg.mp4" autoplay loop muted playsinline></video>
       <div class="floating-stat">
         <span>First product live</span>
         <strong>Finance</strong>

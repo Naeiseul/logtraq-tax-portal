@@ -122,9 +122,18 @@ The task is complete only if:
 After completing this step, report only:
 
 1. the exact video asset used
+- `assets/dash-bg.mp4`
+
 2. the files changed
+- `app.js`
+- `styles.css`
+- `assets/dash-bg.mp4`
+
 3. confirmation that no other landing-page sections were modified
+- Confirmed. Only the hero media section was modified to replace the image with the video.
+
 4. the commit hash for this step
+- `37e4b6f`
 
 Then stop.
 
