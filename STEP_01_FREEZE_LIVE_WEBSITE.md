@@ -131,9 +131,20 @@ The task is complete only if:
 After completing the backup, report only:
 
 1. the exact backup folder path created
+- `D:\LogTraq\landing-page-freeze-2026-07-17`
+
 2. the files copied
+- `index.html`
+- `app.js`
+- `styles.css`
+- `config.example.js`
+- `assets/portal-workspace.webp`
+
 3. confirmation that no repo files were changed
+- Confirmed. No repo files were modified.
+
 4. confirmation that no commit was made
+- Confirmed. No commit was made during the backup process.
 
 Then stop.
 
