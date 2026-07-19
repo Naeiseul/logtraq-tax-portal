@@ -98,7 +98,6 @@ const products = [
 const app = document.querySelector("#app");
 const config = {
   salesWhatsApp: "27793257256",
-  salesEmail: "info@logtraq.co.za",
   ...(window.LOGTRAQ_CONFIG || {}),
 };
 let selectedClientIndex = 0;
@@ -271,16 +270,7 @@ function renderLanding() {
     <a class="primary-button" href="${salesHref("the R800 finance portal setup")}" target="_blank" rel="noreferrer">Claim launch setup</a>
   `;
 
-  const footer = el("footer", "site-footer");
-  footer.innerHTML = `
-    <p>Need a hand? Get in touch with LogTraq.</p>
-    <div class="footer-contact-links">
-      <a href="mailto:${config.salesEmail}">Email us</a>
-      <a href="${salesHref("a LogTraq portal")}" target="_blank" rel="noreferrer">WhatsApp us</a>
-    </div>
-  `;
-
-  shell.append(nav, hero, productSection, journey, grid, pricing, footer);
+  shell.append(nav, hero, productSection, journey, grid, pricing);
   app.replaceChildren(shell);
 
   document.querySelector("#openPortal").addEventListener("click", () => renderPortal());
